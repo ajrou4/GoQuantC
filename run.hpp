@@ -59,7 +59,7 @@ private:
 
 public:
     OrderAPI(const std::string& id, const std::string& secret) : clientId(id), clientSecret(secret) {}
-
+    void Streaming();
     std::string getAccessToken() {
         json payload = {
             {"id", 0},

@@ -14,6 +14,8 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     && apt-get clean
 
+# Clone Json for C++ modern 
+RUN git clone git@github.com:nlohmann/json.git json-develop
 # Clone WebSocket++ repository from GitHub
 RUN git clone https://github.com/zaphoyd/websocketpp.git /websocketpp
 
