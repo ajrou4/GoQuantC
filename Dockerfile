@@ -56,4 +56,4 @@ USER appuser
 EXPOSE 9002
 
 # Run the application
-CMD ["main"]
+CMD ["a.out"]
