@@ -14,10 +14,11 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     && apt-get clean
 
-# Clone Json for C++ modern 
-RUN git clone git@github.com:nlohmann/json.git json-develop
+# Clone JSON for C++ modern (using HTTPS instead of SSH)
+RUN git clone https://github.com/nlohmann/json.git /usr/local/json-develop
+
 # Clone WebSocket++ repository from GitHub
-RUN git clone https://github.com/zaphoyd/websocketpp.git /websocketpp
+RUN git clone https://github.com/zaphoyd/websocketpp.git /usr/local/websocketpp
 
 # Create a working directory
 WORKDIR /usr/src/app
@@ -27,7 +28,7 @@ COPY . .
 
 # Build your application
 RUN mkdir -p build && cd build && \
-    cmake -DWEBSOCKETPP_DIR=/websocketpp .. && \
+    cmake -DWEBSOCKETPP_DIR=/usr/local/websocketpp -DJSON_DIR=/usr/local/json-develop .. && \
     make
 
 # Use a runtime image based on Ubuntu for the final image
@@ -39,11 +40,20 @@ RUN apt-get update && apt-get install -y \
     libcurl4 \
     && apt-get clean
 
+# Create a non-root user
+RUN useradd -m appuser
+
 # Copy the built application from the builder stage
-COPY --from=builder /usr/src/app/build/your_application /usr/local/bin/
+COPY --from=builder /usr/src/app/build/main /usr/local/bin/
+
+# Set the working directory
+WORKDIR /home/appuser
+
+# Switch to non-root user
+USER appuser
 
 # Expose the WebSocket server port
 EXPOSE 9002
 
 # Run the application
-CMD ["your_application"]
+CMD ["main"]
